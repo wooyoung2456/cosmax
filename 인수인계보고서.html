@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>교대 근무 인수인계 보고서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f8f8;
+    --card: #ffffff;
+    --ink: #17222e;
+    --ink-secondary: #51606f;
+    --ink-muted: #8996a3;
+    --border: #e2e6ea;
+    --accent: #1e3a5f;
+    --accent-wash: #bdd6fc;
+    --cta: #2c7a7b;
+    --cta-hover: #256665;
+    --warn: #b3311f;
+    --warn-wash: #fbe9e6;
+    --glow-1: rgba(30, 58, 95, 0.09);
+    --glow-2: rgba(44, 122, 123, 0.09);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10161c;
+      --card: #1b2530;
+      --ink: #eef2f6;
+      --ink-secondary: #b7c2cc;
+      --ink-muted: #7c8994;
+      --border: #2b3744;
+      --accent: #6f9bc9;
+      --accent-wash: #1b2a3a;
+      --cta: #3fa79d;
+      --cta-hover: #4cbdb2;
+      --warn: #e2574a;
+      --warn-wash: #3a1e1a;
+      --glow-1: rgba(111, 155, 201, 0.14);
+      --glow-2: rgba(63, 167, 157, 0.14);
+    }
+  }
+
+  :root[data-theme="light"] {
+    --bg: #f8f8f8; --card: #ffffff; --ink: #17222e; --ink-secondary: #51606f; --ink-muted: #8996a3;
+    --border: #e2e6ea; --accent: #1e3a5f; --accent-wash: #bdd6fc; --cta: #2c7a7b; --cta-hover: #256665;
+    --warn: #b3311f; --warn-wash: #fbe9e6; --glow-1: rgba(30, 58, 95, 0.09); --glow-2: rgba(44, 122, 123, 0.09);
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #10161c; --card: #1b2530; --ink: #eef2f6; --ink-secondary: #b7c2cc; --ink-muted: #7c8994;
+    --border: #2b3744; --accent: #6f9bc9; --accent-wash: #1b2a3a; --cta: #3fa79d; --cta-hover: #4cbdb2;
+    --warn: #e2574a; --warn-wash: #3a1e1a; --glow-1: rgba(111, 155, 201, 0.14); --glow-2: rgba(63, 167, 157, 0.14);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+
+  body {
+    font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    font-size: 16px;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(circle at 12% 8%, var(--glow-1), transparent 42%),
+      radial-gradient(circle at 90% 18%, var(--glow-2), transparent 38%),
+      radial-gradient(circle at 8% 92%, var(--glow-2), transparent 40%),
+      radial-gradient(circle at 95% 88%, var(--glow-1), transparent 42%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    padding: 36px 16px 56px;
+  }
+
+  .wrap { width: min(620px, 100%); display: flex; flex-direction: column; gap: 20px; }
+
+  .card-logo-row {
+    display: flex;
+    justify-content: flex-end;
+    margin: -12px -12px 2px 0;
+  }
+
+  .card-logo {
+    height: 54px;
+    width: auto;
+    display: block;
+    mix-blend-mode: multiply;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .card-logo {
+      mix-blend-mode: normal;
+      background: #ffffff;
+      padding: 7px 16px;
+      border-radius: 10px;
+      box-shadow: 0 6px 14px -8px var(--accent);
+    }
+  }
+
+  :root[data-theme="dark"] .card-logo {
+    mix-blend-mode: normal;
+    background: #ffffff;
+    padding: 7px 16px;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px -8px var(--accent);
+  }
+
+  :root[data-theme="light"] .card-logo {
+    mix-blend-mode: multiply;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .eyebrow {
+    margin: 0 0 4px;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 12px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  h1 { margin: 0 0 6px; font-size: 26px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.3; }
+  .sub { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-secondary); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .meta-row { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .field .qnum { color: var(--accent); font-family: ui-monospace, monospace; font-weight: 700; margin-right: 4px; }
+
+  .field input, .field select, .field textarea {
+    font-family: inherit;
+    font-size: 16px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+
+  .field textarea { min-height: 64px; line-height: 1.5; }
+
+  .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+
+  .submit {
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--cta);
+  }
+
+  .submit:hover { background: var(--cta-hover); }
+  .submit:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .submit:disabled { opacity: 0.6; cursor: default; }
+
+  .error-box {
+    display: none;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--warn);
+    background: var(--warn-wash);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .error-box.visible { display: block; }
+
+  .report { display: none; flex-direction: column; gap: 16px; }
+  .report.visible { display: flex; }
+
+  .report-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 10px;
+  }
+
+  .report-head h2 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.35; }
+  .report-head .stamp { font-family: ui-monospace, monospace; font-size: 12.5px; color: var(--ink-muted); }
+
+  .summary-line {
+    font-size: 15px;
+    line-height: 1.6;
+    background: var(--accent-wash);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .report-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn-secondary {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .intro {
+    text-align: center;
+    align-items: center;
+    padding: 36px 30px 40px;
+    gap: 22px;
+    box-shadow: 0 24px 60px -30px var(--accent);
+  }
+  .intro .eyebrow { text-align: center; }
+  .intro h1 { font-size: 26px; text-wrap: balance; }
+
+  .intro-illustration-wrap {
+    width: 100%;
+    max-width: 260px;
+    border-radius: 20px;
+    padding: 14px;
+    background: radial-gradient(circle at 50% 45%, var(--accent-wash), transparent 72%);
+  }
+
+  .intro-illustration {
+    width: 100%;
+    display: block;
+  }
+
+  .intro-desc {
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--ink-secondary);
+    max-width: 420px;
+  }
+
+  .intro-features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .intro-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .intro-feature-icon {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--accent-wash);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+  }
+
+  .intro .submit { width: 100%; margin-top: 4px; }
+
+  #surveyFlow { display: flex; flex-direction: column; gap: 20px; }
+  .intro[hidden], #surveyFlow[hidden] { display: none; }
+
+  @media print {
+    body { padding: 0; background: #fff; }
+    .card.form-card, .report-actions, header { display: none !important; }
+    .report { display: flex !important; }
+    .wrap { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="card intro" id="intro">
+    <div class="card-logo-row">
+      <img class="card-logo" src="cosmax_logo.jpg" alt="COSMAX 로고">
+    </div>
+    <div class="intro-illustration-wrap">
+      <img class="intro-illustration" src="handover_illustration.jpg" alt="체크리스트가 담긴 대형 클립보드 옆에 서 있는 안전모를 쓴 작업자 일러스트">
+    </div>
+    <p class="eyebrow">SHIFT HANDOVER · 교대 근무</p>
+    <h1>인수인계 보고서 작성</h1>
+    <p class="intro-desc">7개 질문에 답하기만 하면, AI가 내용을 자연스럽게 정리하고 대응 방법까지 추천해서 보고서 파일로 만들어드려요.</p>
+    <div class="intro-features">
+      <div class="intro-feature"><span class="intro-feature-icon">📝</span><span>7개 질문에만 답하면 끝</span></div>
+      <div class="intro-feature"><span class="intro-feature-icon">🤖</span><span>AI가 내용을 정리하고 대응 방법까지 추천</span></div>
+      <div class="intro-feature"><span class="intro-feature-icon">📁</span><span>완성된 보고서를 파일로 자동 저장</span></div>
+    </div>
+    <button type="button" class="submit" id="startBtn">🚀 설문조사 시작하기</button>
+  </section>
+
+  <div id="surveyFlow" hidden>
+  <header>
+    <p class="eyebrow">SHIFT HANDOVER · 교대 근무</p>
+    <h1>인수인계 보고서 작성</h1>
+    <p class="sub">아래 설문에 답하고 "복사하기"를 누르면, Claude Code 대화창이나 claude.ai에 붙여넣기 좋은 형태로 정리해드려요.</p>
+  </header>
+
+  <form class="card form-card" id="handoverForm">
+    <div class="card-logo-row">
+      <img class="card-logo" src="cosmax_logo.jpg" alt="COSMAX 로고">
+    </div>
+    <div class="meta-row">
+      <div class="field">
+        <label for="writer">작성자</label>
+        <input type="text" id="writer" placeholder="이름" required>
+      </div>
+      <div class="field">
+        <label for="shift">근무조</label>
+        <select id="shift">
+          <option value="오전">오전 근무</option>
+          <option value="오후">오후 근무</option>
+          <option value="야간">야간 근무</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="field">
+      <label><span class="qnum">Q1</span>오늘 담당한 작업은 무엇인가요?</label>
+      <textarea id="q1" required></textarea>
+    </div>
+    <div class="field">
+      <label><span class="qnum">Q2</span>작업 진행 상황은 어떠했나요?</label>
+      <textarea id="q2"></textarea>
+    </div>
+    <div class="field">
+      <label><span class="qnum">Q3</span>특이사항이 있었나요?</label>
+      <textarea id="q3" placeholder="없으면 비워두셔도 됩니다"></textarea>
+    </div>
+    <div class="field">
+      <label><span class="qnum">Q4</span>문제가 발생했다면 어떤 내용이었나요?</label>
+      <textarea id="q4" placeholder="없으면 비워두셔도 됩니다"></textarea>
+    </div>
+    <div class="field">
+      <label><span class="qnum">Q5</span>문제에 대해 어떤 조치를 했나요?</label>
+      <textarea id="q5" placeholder="없으면 비워두셔도 됩니다"></textarea>
+    </div>
+    <div class="field">
+      <label><span class="qnum">Q6</span>다음 근무자가 이어서 해야 할 작업은 무엇인가요?</label>
+      <textarea id="q6"></textarea>
+    </div>
+    <div class="field">
+      <label><span class="qnum">Q7</span>다음 근무자가 주의해야 할 사항은 무엇인가요?</label>
+      <textarea id="q7"></textarea>
+    </div>
+
+    <p class="error-box" id="errorBox"></p>
+    <button type="submit" class="submit" id="submitBtn">📋 설문 내용 복사하기</button>
+  </form>
+
+  <section class="card report" id="report">
+    <div class="report-head">
+      <h2>📋 복사 완료 — 붙여넣어 주세요</h2>
+      <span class="stamp" id="stampDate"></span>
+    </div>
+    <p class="summary-line" id="copyStatus">클립보드에 복사되었습니다. 이 페이지를 연 Claude Code 대화창에 붙여넣거나, 아래 "Claude 열기"로 claude.ai를 열어서 붙여넣으세요(Ctrl+V).</p>
+
+    <pre id="copyPreview" style="margin:0; white-space:pre-wrap; font-family:inherit; font-size:14.5px; line-height:1.6; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px;"></pre>
+
+    <div class="report-actions">
+      <button type="button" class="btn-secondary" id="copyBtn">📄 다시 복사</button>
+      <a class="btn-secondary" id="claudeLink" href="https://claude.ai/new" target="_blank" rel="noopener">🔗 Claude 열기</a>
+      <button type="button" class="btn-secondary" id="editBtn">✏ 다시 작성하기</button>
+    </div>
+  </section>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var form = document.getElementById("handoverForm");
+    var report = document.getElementById("report");
+    var submitBtn = document.getElementById("submitBtn");
+    var errorBox = document.getElementById("errorBox");
+    var copyPreview = document.getElementById("copyPreview");
+    var copyStatus = document.getElementById("copyStatus");
+    var intro = document.getElementById("intro");
+    var surveyFlow = document.getElementById("surveyFlow");
+
+    document.getElementById("startBtn").addEventListener("click", function () {
+      intro.hidden = true;
+      surveyFlow.hidden = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    function val(id) { return document.getElementById(id).value.trim(); }
+
+    function showError(msg) {
+      errorBox.textContent = "⚠ " + msg;
+      errorBox.classList.add("visible");
+    }
+    function clearError() {
+      errorBox.classList.remove("visible");
+      errorBox.textContent = "";
+    }
+
+    function buildPrompt(meta, answers) {
+      return "아래 설문 내용을 종합·정리해서 인수인계 보고서로 작성해줘. " +
+        "특이사항이나 문제가 있다면, 그에 대응할 수 있는 방법을 3가지 정도 추천해줘. " +
+        "그리고 완성된 보고서를 바탕화면의 '인수인계' 폴더에 'YYMMDD_인수인계' 형식(오늘 날짜)의 파일로 저장해줘. 폴더가 없으면 새로 만들어줘.\n\n" +
+        "작성자: " + meta.writer + " / 근무조: " + meta.shift + " / 작성일시: " + meta.dateStr + " " + meta.timeStr + "\n\n" +
+        "[Q1] 오늘 담당한 작업은 무엇인가요?\n" + (answers.q1 || "(답변 없음)") + "\n\n" +
+        "[Q2] 작업 진행 상황은 어떠했나요?\n" + (answers.q2 || "(답변 없음)") + "\n\n" +
+        "[Q3] 특이사항이 있었나요?\n" + (answers.q3 || "(없음)") + "\n\n" +
+        "[Q4] 문제가 발생했다면 어떤 내용이었나요?\n" + (answers.q4 || "(없음)") + "\n\n" +
+        "[Q5] 문제에 대해 어떤 조치를 했나요?\n" + (answers.q5 || "(없음)") + "\n\n" +
+        "[Q6] 다음 근무자가 이어서 해야 할 작업은 무엇인가요?\n" + (answers.q6 || "(없음)") + "\n\n" +
+        "[Q7] 다음 근무자가 주의해야 할 사항은 무엇인가요?\n" + (answers.q7 || "(없음)");
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      clearError();
+
+      var answers = {
+        q1: val("q1"), q2: val("q2"), q3: val("q3"),
+        q4: val("q4"), q5: val("q5"), q6: val("q6"), q7: val("q7")
+      };
+
+      if (!answers.q1) {
+        showError("Q1(오늘 담당한 작업)은 최소한 입력해주세요.");
+        return;
+      }
+
+      var now = new Date();
+      var meta = {
+        writer: val("writer") || "미기재",
+        shift: document.getElementById("shift").value,
+        dateStr: now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0"),
+        timeStr: String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0")
+      };
+      document.getElementById("stampDate").textContent = meta.dateStr;
+
+      var text = buildPrompt(meta, answers);
+      copyPreview.textContent = text;
+
+      copyText(text).then(function () {
+        copyStatus.textContent = "클립보드에 복사되었습니다. 이 페이지를 연 Claude Code 대화창에 붙여넣거나, 아래 \"Claude 열기\"로 claude.ai를 열어서 붙여넣으세요(Ctrl+V).";
+      }).catch(function () {
+        copyStatus.textContent = "클립보드 복사에 실패했어요. 아래 내용을 직접 선택해서 복사해주세요.";
+      });
+
+      report.classList.add("visible");
+      report.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.getElementById("editBtn").addEventListener("click", function () {
+      report.classList.remove("visible");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", function () {
+      copyText(copyPreview.textContent).then(function () {
+        var btn = document.getElementById("copyBtn");
+        var original = btn.textContent;
+        btn.textContent = "✅ 복사됨";
+        setTimeout(function () { btn.textContent = original; }, 1500);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
